@@ -16,10 +16,10 @@ const QuoteCard = (props) => {
     <>
       <Card className={classes.card}>
         <Typography variant="body1" gutterBottom>
-          {props.quoteText}
+          {props.text}
         </Typography>
         <Typography variant="caption" display="block">
-          -{props.quoteAuthor}
+          -{props.author}
         </Typography>
       </Card>
     </>

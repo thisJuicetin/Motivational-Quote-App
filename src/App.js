@@ -1,7 +1,7 @@
 import { Box, Button, Fade, makeStyles, Typography } from "@material-ui/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QuoteCard from "./components/QuoteCard";
-import { getMotivationalQuote } from "./utils/QuotesAPIUtil";
+import { getMotivationalQuotes } from "./utils/QuotesAPIUtil";
 
 const useStyles = makeStyles({
   root: {
@@ -26,42 +26,61 @@ const useStyles = makeStyles({
   },
 });
 
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+const FADE_DURATION = 500;
+
 const App = () => {
   const classes = useStyles();
-  const [mainCard, setMainCard] = useState(
-    <QuoteCard
-      quoteAuthor="Justin Mabutas"
-      quoteText="Click the button to get started."
-    />
-  );
-  const [cardFade, setCardFade] = useState(true);
+  const [quoteArray, setQuoteArray] = useState([]);
+  const [mainCard, setMainCard] = useState({
+    author: "Justin Mabutas",
+    text: "Click the button to get started.",
+  });
   const [quoteLoading, setQuoteLoading] = useState(false);
+
+  useEffect(() => {
+    if (quoteArray.length > 0) {
+      const peek = quoteArray[quoteArray.length - 1];
+      setMainCard(peek);
+      setQuoteLoading(false);
+    }
+  }, [quoteArray]);
+
+  const handleClick = async () => {
+    setQuoteLoading(true);
+    if (quoteArray.length === 0) {
+      await sleep(FADE_DURATION);
+      const response = await getMotivationalQuotes();
+      setQuoteArray(response);
+    } else {
+      await sleep(FADE_DURATION);
+      quoteArray.pop();
+      if (quoteArray.length === 0) {
+        const response = await getMotivationalQuotes();
+        setQuoteArray(response);
+      } else {
+        setQuoteArray([...quoteArray]);
+      }
+    }
+  };
   return (
     <Box className={classes.root}>
       <Box className={classes.header}>
         <Typography variant="h3">Motivational Quote App</Typography>
       </Box>
-      <Fade in={cardFade} timeout={500}>
-        <div>{mainCard}</div>
+      <Fade in={!quoteLoading} timeout={FADE_DURATION}>
+        <div>
+          <QuoteCard author={mainCard.author} text={mainCard.text} />
+        </div>
       </Fade>
       <Button
         variant="contained"
         color="primary"
         disabled={quoteLoading}
         className={classes.quoteButton}
-        onClick={async () => {
-          setQuoteLoading(true);
-          setCardFade(false);
-          const data = await getMotivationalQuote();
-          setQuoteLoading(false);
-          setCardFade(true);
-          setMainCard(
-            <QuoteCard
-              quoteAuthor={data.quoteAuthor}
-              quoteText={data.quoteText}
-            />
-          );
-        }}
+        onClick={handleClick}
       >
         Get Motivated!
       </Button>
