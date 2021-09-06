@@ -68,7 +68,9 @@ const App = () => {
   return (
     <Box className={classes.root}>
       <Box className={classes.header}>
-        <Typography variant="h3">Motivational Quote App</Typography>
+        <Typography variant="h2" style={{ fontWeight: "400" }}>
+          Motivational Quotes
+        </Typography>
       </Box>
       <Fade in={!quoteLoading} timeout={FADE_DURATION}>
         <div>

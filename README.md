@@ -1,4 +1,4 @@
-# Motivational Quote App with Quotes API
+# Motivational Quote App with Famous Quotes API
 
 By Justin Mabutas
 
